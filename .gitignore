@@ -1,0 +1,14 @@
+*~
+*.swp
+*.wlf
+*#
+*.o
+*.a
+*.d
+*.dep
+*.vcd
+*.x
+*.gch
+core
+transcript
+work
