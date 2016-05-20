@@ -1,0 +1,107 @@
+/* Layout */
+
+/* Navbar */
+div.LocalNavBar
+{
+	position: relative;
+	left: 0px;
+	top: 0px;
+	padding: 0;
+	margin: 0;
+	height:4em;
+}
+
+
+ul.NavBar
+{
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	float:left;  
+}
+
+ul.NavBar li
+{
+ 	margin: 0;
+	padding: 0px;
+	float: left;
+}
+
+ul.NavBar li a
+{
+	padding: 0 5px;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+
+
+
+/* Subliste */
+ul.NavBar li ul 
+{
+	position: absolute;
+	top: 2em;
+	left: 0px;
+	width:1600px; /* hack pour IE : grmpf. Doit etre avant le deuxième width (celui pour Gecko)*/
+	width:100%;
+
+	
+	margin: -2px;
+	padding: 0;
+	
+	/*display: none; remplacé par une gestion des z-index*/
+	list-style-type: none;
+}
+
+ul.NavBar li.selected ul 
+{
+	/*display:block;remplacé par une gestion des z-index*/
+	z-index: 1000;
+}
+
+.NavBar li:hover ul, .NavBar li.over ul {
+	/*display: block;remplacé par une gestion des z-index*/
+	z-index: 6000;
+}
+
+
+
+/* icones de nav en haut */
+div.navbar_icons
+{
+	top: 0px;
+	float: right;	
+	text-decoration : none;
+	z-index: 1000;
+	padding-right: 60px;
+}
+
+div.navbar_icons ul
+{
+	list-style-type: none;
+}
+
+
+div.navbar_icons li
+{
+ 	border: 0px solid ; 
+	padding: 0;
+	margin : 0;
+	float: left;
+}
+
+
+div.navbar_icons img
+{
+	text-decoration : none;
+ 	border: 0px solid ; 
+	padding: 7px 0px;
+	margin : 0px 4px;
+	width: 24px; 
+	height: 23px; 
+	vertical-align: middle;
+}
