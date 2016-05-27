@@ -9,8 +9,8 @@ CXXFLAGS  =  -Wall -g
 LDFLAGS   =  -L$(SYSTEMC)/lib-$(ARCH)
 LDLIBS    =  -lsystemc
 
-EXE = trace 
-SRC = $(patsubst %, %.cpp, $(EXE))
+EXE = travail_clock
+SRC = $(ptsubst %, %.cpp, $(EXE))
 OBJ = $(patsubst %.cpp, %.o, $(SRC))
 
 all: $(EXE)
