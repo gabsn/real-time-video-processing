@@ -9,7 +9,7 @@ CXXFLAGS  =  -Wall -g
 LDFLAGS   =  -L$(SYSTEMC)/lib-$(ARCH)
 LDLIBS    =  -lsystemc
 
-EXE = processus
+EXE = travail_rtl 
 SRC = $(patsubst %, %.cpp, $(EXE))
 OBJ = $(patsubst %.cpp, %.o, $(SRC))
 

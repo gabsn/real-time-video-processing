@@ -1,0 +1,5 @@
+SC_MODULE(SumPixel_base) <-> struct SumPixel_base: sc_module
+
+virtual void sum() = 0;
+
+struct SumPixel_m: public SumPixel_base

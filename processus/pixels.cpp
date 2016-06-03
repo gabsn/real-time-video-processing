@@ -4,61 +4,74 @@ struct Pixel {
     sc_uint<5> r;
     sc_uint<6> g;
     sc_uint<6> b;
-    // un constructeur particulier avec des valeurs par défaut
-    Pixel(sc_uint<5> _r=0, sc_uint<6> _g=0, sc_uint<5> _b=0): r(_r), g(_g), b(_b) { }
 
+    // Constructeur
+    Pixel (sc_uint<5> _r=0, sc_uint<6> _g=0, sc_uint<5> _b=0): r(_r), g(_g), b(_b) {}
+
+    // Surcharge d'opérateurs
     bool operator == (const Pixel &other) {
         return (r == other.r) && (g == other.g) && (b == other.b);
     }
-    // Comment ce type est imprimé
-    // l'opérateur << est un opérateur de la classe std::ostream
+
     friend ostream& operator << (ostream& o, const Pixel& P) {
         o << "[" << P.r << "," << P.g << "," << P.b << "]" ;
         return o;
     }
+
+    Pixel operator + (const Pixel p2) {
+        Pixel ps(0,0,0);
+        ps.r = (r + p2.r > 31) ? 31 : r + p2.r;
+        ps.g = (g + p2.g > 63) ? 63 : g + p2.g;
+        ps.b = (b + p2.b > 63) ? 63 : b + p2.b;
+
+        return ps;
+    }
 };
 
-SC_MODULE(Pixel_A) {
-    sc_signal<Pixel> ps;
+// surcharge de la fonction sc_trace pour la struct Pixel
+void sc_trace(sc_trace_file* _f, const Pixel& p, const std::string& s)  {
+    sc_trace(_f,p.r,s+"_R");
+    sc_trace(_f,p.g,s+"_G");
+    sc_trace(_f,p.b,s+"_B");
+}
 
-    SC_CTOR(Pixel_A): ps("ps") {}
-};
+SC_MODULE(SumPixel) {
+    sc_in<Pixel> p1, p2;
+    sc_out<Pixel> ps;
 
-SC_MODULE(Sum) {
-    sc_signal<Pixel> pa, pb;
-    Pixel_A pixel_a;
-    Pixel_B pixel_b;
+    void sum() {
+        Pixel pc1 = p1;
+        Pixel pc2 = p2;
+        ps = pc1 + pc2;
+    }
 
-    SC_CTOR(Sum): pa("pa"), pb("pb"), pixel_a("pixel_a"), pixel_b("pixel_b") {
-        pixel_a.ps(pa);
-        pixel_b.ps(pb);
+    SC_CTOR(SumPixel) {
+        SC_METHOD (sum);
+        sensitive << p1 << p2;
     }
 };
 
 int sc_main(int argc, char* argv[]) {
-    foo foo_i("foo");
-    sc_signal<bool> a, rst_bar, rst_lab;
-    sc_signal<int> b, c;
+    SumPixel sum_module("sum_module");
+    sc_signal<Pixel> sp1, sp2, sps;
+    Pixel p1(10,23,3), p2(5,20,2), ps(0,0,0);
 
-    foo_i.a(a);
-    foo_i.b(b);
-    foo_i.c(c);
-    foo_i.rst_bar(rst_bar);
-    foo_i.rst_lab(rst_lab);
+    sum_module.p1(sp1);
+    sum_module.p2(sp2);
+    sum_module.ps(sps);
 
-    a = false;
-    b = 1;
-    c = 23;
-    rst_bar = 0;
-    rst_lab = 1;
-    sc_start(0.33,SC_NS);
+    sp1 = p1;
+    sp2 = p2;
+    sps = ps;
+    cout << "p1 : " << p1 << " and p2 : " << p2 << endl;
+    cout << "ps : " << ps << endl;
+    sc_start(0.133,SC_NS);
 
-    a = true;
-    b = 0;
-    c = 43;
-    rst_bar = 1;
-    rst_lab = 0;
-    sc_start();
-
+    p1.g = 55;
+    sp1 = p1;
+    sc_start(0.133,SC_NS);
+    cout << "p1 : " << p1 << " and p2 : " << p2 << endl;
+    cout << "ps : " << ps << endl;
+    
     return 0;
 }
