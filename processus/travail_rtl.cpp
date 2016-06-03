@@ -37,7 +37,8 @@ SC_MODULE(PGCD_m) {
     }
 
     SC_CTOR(PGCD_m) {
-        SC_CTHREAD(loop,clk.pos());
+        SC_THREAD(loop);
+        sensitive << clk.pos();
     }
 };
 
@@ -55,6 +56,8 @@ int sc_main(int argc, char* argv[]) {
     pgcd_i.ready(ready);
     pgcd_i.valid(valid);
 
+    ready = false;
+    valid = false;
     a = 30;
     b = 45;
     sc_start(50,SC_NS);
