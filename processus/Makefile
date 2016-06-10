@@ -21,6 +21,7 @@ run:
 	make && ./$(EXE)
 
 clean:
-	-rm -f *.o 
+	-rm -f *.o *.vcd
+	-find . -executable -type f -delete
 
 .PHONY: clean
