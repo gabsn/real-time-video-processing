@@ -1,5 +1,9 @@
 #include <systemc.h>
+
 #include <cstdlib>
+
+// Implémentation du producteur avec une SC_METHOD
+#define METHOD
 
 struct Pixel {
     sc_uint<5> r;
@@ -50,6 +54,47 @@ SC_MODULE(Producteur_Thread) {
     }
 };
 
+SC_MODULE(Producteur_Method) {
+    sc_fifo_out<Pixel> out;
+    sc_in<bool> clk;
+    sc_uint<5> N;
+    sc_uint<7> count;
+    Pixel * pixel;
+    const Pixel * pixel_3;
+   
+    SC_CTOR(Producteur_Method) { 
+        N = 0;
+        count = 0;
+        pixel = new Pixel(0,0,0);
+        pixel_3 = new Pixel(3,3,3);
+
+        SC_METHOD(main); 
+        sensitive << clk.pos();
+
+        SC_METHOD(wait_N);
+        sensitive << clk.pos();
+    }
+
+    void main() {
+        if (N == 0) {
+            if (count < 100) {
+                out.nb_write(*pixel);
+                *pixel = *pixel + *pixel_3;
+                ++count;
+                if (count == 99) {
+                    N = rand() % 32;
+                    cout << "100 pixels sent" << endl;
+                }
+            }
+        }
+    }
+
+    void wait_N() {
+        if (N < 0)
+            N--;
+    }
+};
+
 SC_MODULE(Consommateur) {
     sc_fifo_in<Pixel> in;
     sc_in<bool> clk;
@@ -71,6 +116,7 @@ SC_MODULE(Consommateur) {
 };
 
 int sc_main(int, char **) {
+    sc_core::sc_report_handler::set_actions( "/IEEE_Std_1666/deprecated",sc_core::SC_DO_NOTHING );
     sc_fifo<Pixel> fifo;
 
     sc_time clk_period(10,SC_NS);
@@ -80,9 +126,15 @@ int sc_main(int, char **) {
     conso.in(fifo);
     conso.clk(clk);
 
-    Producteur_Thread prod("module_prod");
-    prod.out(fifo);
-    prod.clk(clk);
+#if defined(METHOD) 
+    Producteur_Method prod_method("module_prod_method");
+    prod_method.out(fifo);
+    prod_method.clk(clk);
+#else
+    Producteur_Thread prod_thread("module_prod_thread");
+    prod_thread.out(fifo);
+    prod_thread.clk(clk);
+#endif
 
     sc_start(300,SC_NS);
     cout 
