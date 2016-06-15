@@ -2,8 +2,8 @@
 
 #include <cstdlib>
 
-// Implémentation du producteur avec une SC_METHOD
-#define METHOD
+#define METHOD // Implémentation du producteur avec une SC_METHOD
+#define CLK_PERIOD 15,SC_NS
 
 struct Pixel {
     sc_uint<5> r;
@@ -119,8 +119,7 @@ int sc_main(int, char **) {
     sc_core::sc_report_handler::set_actions( "/IEEE_Std_1666/deprecated",sc_core::SC_DO_NOTHING );
     sc_fifo<Pixel> fifo;
 
-    sc_time clk_period(10,SC_NS);
-    sc_clock clk("clk",clk_period);
+    sc_clock clk("clk",CLK_PERIOD);
 
     Consommateur conso("module_conso");
     conso.in(fifo);
