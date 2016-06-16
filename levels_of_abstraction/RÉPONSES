@@ -1,0 +1,9 @@
+On observe à l'aide de gtkwave :
+- exécution du modèle RTL en 22,913 us.
+- exécution du modèle CABA en 24,163 us.
+
+Avec notre programme travail_caba_vs_rtl.cpp, on observe sur un échantillon de 50 tests,que le modèle RTL finit le calcul du PGCD avant le modèle CABA avec une fréquence de 3/5, ce qui justifie les chiffres ci-dessus.
+
+Par contre, je n'ai pas vraiment d'explication pour ce phénomène, d'autant plus étrange que RTL ne finit pas systématiquement le calcul du PGCD avavant CABA...
+
+
