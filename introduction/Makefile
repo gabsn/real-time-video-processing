@@ -4,15 +4,13 @@ ARCH = linux64
 CXX = g++
 CC = g++ 
 
-
 CPPFLAGS  =  -isystem $(SYSTEMC)/include
 CXXFLAGS  =  -Wall -g
 LDFLAGS   =  -L$(SYSTEMC)/lib-$(ARCH)
 LDLIBS    =  -lsystemc
 
-hello_world: hello_world.o
-
 clean:
-	-rm -f *.o
+	-rm -f *.o *.vcd
+	-find . -executable -type f -delete
 
 .PHONY: clean

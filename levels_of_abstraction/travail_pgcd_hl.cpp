@@ -1,23 +1,9 @@
 #include <systemc.h>
 #include <algorithm>
 
-#define CLK_PERIOD 25
+#define CLK_PERIOD 15,SC_NS
 
 using namespace std;
-
-uint8_t pgcd(uint8_t _a, uint8_t _b) {
-    uint8_t Max, Min, d;
-    Max = max(_a,_b);
-    Min = min(_a,_b);
-
-    while (Max != Min) {
-        d = Max-Min;
-        Max = max(Min,d);
-        Min = min(Min,d);
-    }
-
-    return Min;
-}
 
 SC_MODULE(PGCD_hl) {
     sc_in<bool> clk, valid, rst;
@@ -33,6 +19,20 @@ SC_MODULE(PGCD_hl) {
         async_reset_signal_is(rst,true);
     };
 };
+
+uint8_t pgcd(uint8_t _a, uint8_t _b) {
+    uint8_t Max, Min, d;
+    Max = max(_a,_b);
+    Min = min(_a,_b);
+
+    while (Max != Min) {
+        d = Max-Min;
+        Max = max(Min,d);
+        Min = min(Min,d);
+    }
+
+    return Min;
+}
 
 void PGCD_hl::main() {
     c = 0;
@@ -60,7 +60,7 @@ int sc_main(int argc, char* argv[]) {
 
     sc_signal<uint8_t> a, b, c;
     sc_signal<bool> ready, valid, rst;
-    sc_clock clk("clk",CLK_PERIOD,SC_NS);
+    sc_clock clk("clk",CLK_PERIOD);
 
     sc_trace(trace_f, a, "a");
     sc_trace(trace_f, b, "b");
@@ -78,19 +78,27 @@ int sc_main(int argc, char* argv[]) {
     pgcd_i.valid(valid);
     pgcd_i.rst(rst);
 
-    a = 7;
-    b = 21;
-    valid = true;
-    sc_start(CLK_PERIOD,SC_NS);
+    rst = false;
 
-    valid = false;
-    while (!ready) {
-        sc_start(CLK_PERIOD,SC_NS); 
-        cout << "lol" << endl;
+    for (int i=0; i<50; ++i) {
+        a = rand() % 256;
+        b = rand() % 256;
+        //cout << "i = " << i << " a = " << (int)a << " b = " << (int)b << " and i = " << i << endl;
+        valid = true;
+        sc_start(CLK_PERIOD);
+
+        valid = false;
+        while (!ready) {
+            sc_start(CLK_PERIOD); 
+        }
+
+        if (c == pgcd(a,b))
+            cout << "PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
+        else
+            cout << "Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
+
+        sc_start(CLK_PERIOD);
     }
-
-    cout << "PGCD(" << (int) a <<","<< (int) b << ") = " << (int) c << endl;
-    sc_start(CLK_PERIOD,SC_NS);
 
     sc_close_vcd_trace_file(trace_f);
 
