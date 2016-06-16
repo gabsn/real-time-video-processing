@@ -1,7 +1,7 @@
 #include <systemc.h>
 #include <algorithm>
 
-#define CLK_PERIOD 25
+#define CLK_PERIOD 25,SC_NS
 
 using namespace std;
 
@@ -21,6 +21,22 @@ SC_MODULE(PGCD_caba) {
     };
 };
 
+uint8_t PGCD_caba::pgcd(uint8_t _a, uint8_t _b) {
+    uint8_t Max, Min, d;
+    Max = max(_a,_b);
+    Min = min(_a,_b);
+    wait();
+
+    while (Max != Min) {
+        d = Max-Min;
+        Max = max(Min,d);
+        Min = min(Min,d);
+        wait();
+    }
+
+    return Min;
+}
+
 void PGCD_caba::main() {
     c = 0;
     ready = false;
@@ -38,22 +54,19 @@ void PGCD_caba::main() {
     }
 }
 
-uint8_t PGCD_caba::pgcd(uint8_t _a, uint8_t _b) {
+uint8_t pgcd(uint8_t _a, uint8_t _b) {
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
-    wait();
 
     while (Max != Min) {
         d = Max-Min;
         Max = max(Min,d);
         Min = min(Min,d);
-        wait();
     }
 
     return Min;
 }
-
 int sc_main(int argc, char* argv[]) {
     sc_trace_file *trace_f;
     trace_f = sc_create_vcd_trace_file ("trace_pgcd_caba");
@@ -63,7 +76,7 @@ int sc_main(int argc, char* argv[]) {
 
     sc_signal<uint8_t> a, b, c;
     sc_signal<bool> ready, valid, rst;
-    sc_clock clk("clk",CLK_PERIOD,SC_NS);
+    sc_clock clk("clk",CLK_PERIOD);
 
     sc_trace(trace_f, a, "a");
     sc_trace(trace_f, b, "b");
@@ -81,18 +94,27 @@ int sc_main(int argc, char* argv[]) {
     pgcd_i.valid(valid);
     pgcd_i.rst(rst);
 
-    a = 9;
-    b = 27;
-    valid = true;
-    sc_start(CLK_PERIOD,SC_NS);
+    rst = false;
 
-    valid = false;
-    do {
-        sc_start(CLK_PERIOD,SC_NS); 
-    } while (!ready);
+    for (int i=0; i<50; ++i) {
+        a = rand() % 256;
+        b = rand() % 256;
+        //cout << "i = " << i << " a = " << (int)a << " b = " << (int)b << " and i = " << i << endl;
+        valid = true;
+        sc_start(CLK_PERIOD);
 
-    cout << "PGCD(" << (int) a <<","<< (int) b << ") = " << (int) c << endl;
-    sc_start(CLK_PERIOD,SC_NS);
+        valid = false;
+        while (!ready) {
+            sc_start(CLK_PERIOD); 
+        }
+
+        if (c == pgcd(a,b))
+            cout << "PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
+        else
+            cout << "Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
+
+        sc_start(CLK_PERIOD);
+    }
 
     sc_close_vcd_trace_file(trace_f);
 

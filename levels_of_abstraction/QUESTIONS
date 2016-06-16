@@ -1,0 +1,3 @@
+- pourquoi la simu "bloque" lorsque l'on effectue le calucul de plus de 64 pgcd ?
+
+- reset asynchrone avec sc_method ?
