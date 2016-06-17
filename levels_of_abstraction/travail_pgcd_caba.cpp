@@ -22,6 +22,8 @@ SC_MODULE(PGCD_caba) {
 };
 
 uint8_t PGCD_caba::pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -55,6 +57,8 @@ void PGCD_caba::main() {
 }
 
 uint8_t pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -96,7 +100,7 @@ int sc_main(int argc, char* argv[]) {
 
     rst = false;
 
-    for (int i=0; i<50; ++i) {
+    for (int i=0; i<100; ++i) {
         a = rand() % 256;
         b = rand() % 256;
         //cout << "i = " << i << " a = " << (int)a << " b = " << (int)b << " and i = " << i << endl;
@@ -109,9 +113,9 @@ int sc_main(int argc, char* argv[]) {
         }
 
         if (c == pgcd(a,b))
-            cout << "PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
+            cout << "(" << i+1 << ") PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
         else
-            cout << "Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
+            cout << "(" << i+1 << ") Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
 
         sc_start(CLK_PERIOD);
     }

@@ -21,6 +21,8 @@ SC_MODULE(PGCD_hl) {
 };
 
 uint8_t pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -80,7 +82,7 @@ int sc_main(int argc, char* argv[]) {
 
     rst = false;
 
-    for (int i=0; i<50; ++i) {
+    for (int i=0; i<100; ++i) {
         a = rand() % 256;
         b = rand() % 256;
         //cout << "i = " << i << " a = " << (int)a << " b = " << (int)b << " and i = " << i << endl;

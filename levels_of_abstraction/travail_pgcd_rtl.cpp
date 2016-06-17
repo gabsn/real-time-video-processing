@@ -32,10 +32,11 @@ SC_MODULE(PGCD_rtl) {
 };
 
 void PGCD_rtl::control() {
-    if (Max == Min && ready == false)
+    if (Max == Min && ready == false) {
         ready = true;
-    else
+    } else {
         ready = false;
+    }
 }
 
 void PGCD_rtl::data_path() {
@@ -43,6 +44,9 @@ void PGCD_rtl::data_path() {
     if (valid) {
         Max = max(a,b);
         Min = min(a,b);
+    } else if (a == 0 || b == 0) {
+        Min = 1;
+        Max = 1;
     } else {
         int d = Max-Min;
         Max = max(Min,d);
@@ -53,6 +57,8 @@ void PGCD_rtl::data_path() {
 }
 
 uint8_t pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -93,7 +99,7 @@ int sc_main(int argc, char* argv[]) {
     pgcd_i.valid(valid);
     pgcd_i.rst(rst);
 
-    for (int i=0; i<50; ++i) {
+    for (int i=0; i<100; ++i) {
         a = rand() % 256;
         b = rand() % 256;
         //cout << "i = " << i << " a = " << (int)a << " b = " << (int)b << " and i = " << i << endl;
@@ -106,9 +112,9 @@ int sc_main(int argc, char* argv[]) {
         }
 
         if (c == pgcd(a,b))
-            cout << "PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
+            cout << "(" << i+1 << ") PGCD(" << (int) a << "," << (int) b << ") = " << (int) c << endl;
         else
-            cout << "Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
+            cout << "(" << i+1 << ") Wrong answer : PGCD(" << (int) a << "," << (int) b << ") != " << (int) c << endl;
 
         sc_start(CLK_PERIOD);
     }

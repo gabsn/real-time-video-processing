@@ -41,6 +41,9 @@ void PGCD_rtl::data_path() {
     if (valid) {
         Max = max(a,b);
         Min = min(a,b);
+    } else if (a == 0 || b == 0) {
+        Min = 1;
+        Max = 1;
     } else {
         int d = Max-Min;
         Max = max(Min,d);
@@ -66,6 +69,8 @@ SC_MODULE(PGCD_caba) {
 };
 
 uint8_t PGCD_caba::pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -98,6 +103,8 @@ void PGCD_caba::main() {
     }
 }
 uint8_t pgcd(uint8_t _a, uint8_t _b) {
+    if (_a == 0 || _b == 0)
+        return 1;
     uint8_t Max, Min, d;
     Max = max(_a,_b);
     Min = min(_a,_b);
@@ -155,7 +162,7 @@ int sc_main(int argc, char* argv[]) {
     pgcd_caba.valid(valid_caba);
 
     int rtl(0), caba(0);
-    for (int i=0; i<50; ++i) {
+    for (int i=0; i<100; ++i) {
         a = rand() % 256;
         b = rand() % 256;
         a_caba = a;
