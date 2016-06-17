@@ -18,7 +18,10 @@ void VIDEO_OUT::writer() {
             cout << "ERROR: pixel_counter > SIZE" << endl;
 
         if (pixel_counter == SIZE) {
-            string filename = "wallace_out_"+image_counter;
+            ostringstream convert;
+            convert << image_counter;
+            string number = convert.str(); 
+            string filename = "wallace_out_"+number;
             image_write(image,filename.c_str());
             pixel_counter = 0;
             image_counter++;
