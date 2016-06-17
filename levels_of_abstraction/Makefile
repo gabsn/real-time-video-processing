@@ -1,8 +1,9 @@
 SYSTEMC ?= /opt/systemc-2.3.1
 LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}:/opt/systemc-2.3.1/lib-linux64
+
 ARCH = linux64
 CXX = g++
-CC = g++ 
+CC = gcc 
 
 CPPFLAGS  =  -isystem $(SYSTEMC)/include
 CXXFLAGS  =  -Wall -g
