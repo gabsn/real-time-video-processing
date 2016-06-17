@@ -3,6 +3,9 @@
 #define IMAGE_H
 #include <png.h>
 
+#define SIZE 720*576
+#define WIDTH 720
+#define HEIGHT 576
 
 // Une image est un tableau de pixels (unsigned char, pour une image en niveaux de gris)
 // On ne définit pas sa taille à l'avance, cela permettra de faire des simulations avec des images plus petites...
