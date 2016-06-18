@@ -13,6 +13,7 @@
 #include <sstream>
 #include "video_in.h"
 #include "video_out.h"
+#include "filtre.h"
 
 /***************************************************
  *	MAIN
@@ -43,31 +44,41 @@ int sc_main (int argc, char *argv[]) {
     sc_clock                        signal_clk("Clock", pix_period);
     sc_signal<bool>                 signal_resetn;
 
-    sc_signal<bool>                 signal_vref, signal_href;
-    sc_signal<unsigned char>        signal_pixel;
+    sc_signal<bool>                 signal_vref_1, signal_href_1, signal_vref_2, signal_href_2;
+    sc_signal<unsigned char>        signal_pixel_1, signal_pixel_2;
 
     /********************************************************
      *	Instanciation des modules
      *******************************************************/
 
     VIDEO_IN video_in("VIDEO_GEN");
+    FILTRE filtre("FILTRE_MOY");
     VIDEO_OUT video_out("VIDEO_DISP");
 
     /*********************************************************
      *	Connexion des composants
      ********************************************************/
 
-    video_in.clk       ( signal_clk    ) ;
-    video_in.reset_n   ( signal_resetn ) ;
-    video_in.href      ( signal_href   ) ;
-    video_in.vref      ( signal_vref   ) ;
-    video_in.pixel_out ( signal_pixel  ) ;
+    video_in.clk       ( signal_clk     ) ;
+    video_in.reset_n   ( signal_resetn  ) ;
+    video_in.href      ( signal_href_1  ) ;
+    video_in.vref      ( signal_vref_1  ) ;
+    video_in.pixel_out ( signal_pixel_1 ) ;
 
-    video_out.clk      ( signal_clk    ) ;
-    video_out.reset_n ( signal_resetn ) ;
-    video_out.pixel_in ( signal_pixel  ) ;
-    video_out.href     ( signal_href   ) ;
-    video_out.vref     ( signal_vref   ) ;
+    filtre.clk         ( signal_clk     ) ;
+    filtre.reset_n     ( signal_resetn  ) ;
+    filtre.h_in        ( signal_href_1  ) ;
+    filtre.v_in        ( signal_vref_1  ) ;
+    filtre.p_in        ( signal_pixel_1 ) ;
+    filtre.h_out       ( signal_href_2  ) ;
+    filtre.v_out       ( signal_vref_2  ) ;
+    filtre.p_out       ( signal_pixel_2 ) ;
+
+    video_out.clk      ( signal_clk     ) ;
+    video_out.reset_n  ( signal_resetn  ) ;
+    video_out.pixel_in ( signal_pixel_2 ) ;
+    video_out.href     ( signal_href_2  ) ;
+    video_out.vref     ( signal_vref_2  ) ;
 
     /*********************************************************
      *	Traces
@@ -85,9 +96,12 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_resetn );
 
     /* chronogrammes video */
-    TRACE( signal_href );
-    TRACE( signal_vref );
-    TRACE( signal_pixel );
+    TRACE( signal_href_1 );
+    TRACE( signal_vref_1 );
+    TRACE( signal_pixel_1 );
+    TRACE( signal_href_2 );
+    TRACE( signal_vref_2 );
+    TRACE( signal_pixel_2 );
 
 #undef TRACE
 

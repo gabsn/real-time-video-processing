@@ -18,14 +18,15 @@ SC_MODULE(FILTRE) {
 
     sc_out<unsigned char> p_out;
     sc_out<bool>          h_out;
-    sc_ out<bool>         v_out;
+    sc_out<bool>          v_out;
 
     /***************************************************
      *  constructeur
      **************************************************/
     SC_CTOR(FILTRE) {
-        line_number;
-        lines = new unsigned char[3*WIDTH];
+        pixel_received_i = 0;
+        pixel_computed_i = 0;
+        image = new unsigned char[SIZE];
 
         SC_METHOD(average);
         sensitive << clk.pos();
@@ -38,8 +39,9 @@ SC_MODULE(FILTRE) {
     private:
     void average();
 
-    unsigned char * lines;
-    unsigned int line_number;
+    unsigned char * image;
+    unsigned int pixel_received_i;
+    unsigned int pixel_computed_i;
 };
 
 #endif
