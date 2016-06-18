@@ -38,6 +38,7 @@ SC_MODULE(FILTRE) {
      **************************************************/
     private:
     void average();
+    void gen_p_out();
 
     unsigned char * image;
     unsigned int pixel_received_i;
