@@ -39,10 +39,10 @@ void FILTRE::gen_p_out() {
     else // intérieur de l'image
     {
         int d = pixel_computed_i / WIDTH;
-        //cout << "d = " << d << endl;
-        p_out = ( image[(d-1)*WIDTH-1] + image[(d-1)*WIDTH] + image[(d-1)*WIDTH+1] 
+        int r = pixel_computed_i % WIDTH;
+        p_out = ( image[(d-1)*WIDTH-1+r] + image[(d-1)*WIDTH+r] + image[(d-1)*WIDTH+1+r] 
                 + image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1]
-                + image[(d+1)*WIDTH-1] + image[(d+1)*WIDTH] + image[(d+1)*WIDTH+1] 
+                + image[(d+1)*WIDTH-1+r] + image[(d+1)*WIDTH+r] + image[(d+1)*WIDTH+1+r] 
                 )/9; 
         //cout << "initial_pixel(" << pixel_computed_i << ") = " << (int)image[pixel_computed_i] << " & p_out = " << (int)p_out <<  " : " << endl;
         //cout << (int)image[(d-1)*WIDTH-1] << " " << (int)image[(d-1)*WIDTH] << " " << (int)image[(d-1)*WIDTH+1] << " " << endl 
