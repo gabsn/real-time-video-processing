@@ -1,6 +1,9 @@
 #include "filtre.h"
 
 void FILTRE::gen_p_out() {
+    int d = pixel_computed_i / WIDTH;
+    int r = pixel_computed_i % WIDTH;
+
     if (pixel_computed_i == 0) // pixel en haut à gauche
     { 
         p_out = (image[0] + image[1] + image[WIDTH] + image[WIDTH+1])/4; 
@@ -19,27 +22,32 @@ void FILTRE::gen_p_out() {
     }
     else if (pixel_computed_i < WIDTH-1) // bord haut
     {
-        p_out = (image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1] + image[pixel_computed_i+WIDTH])/4;
+        p_out = ( image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1]
+                + image[(d+1)*WIDTH-1+r] + image[(d+1)*WIDTH+r] + image[(d+1)*WIDTH+1+r] 
+                )/6; 
     }
     else if (pixel_computed_i % WIDTH == 0) // bord gauche
     {
-        int d = pixel_computed_i / WIDTH;
-        p_out = (image[(d-1)*WIDTH] + image[pixel_computed_i] + image[pixel_computed_i+1] + image[(d+1)*WIDTH])/4;
+        p_out = ( image[(d-1)*WIDTH] + image[(d-1)*WIDTH+1]
+                + image[pixel_computed_i] + image[pixel_computed_i+1]
+                + image[(d+1)*WIDTH] + image[(d+1)*WIDTH+1]
+                )/6; 
     }
     else if (pixel_computed_i % WIDTH == WIDTH-1) // bord droit
     {
-        int d = pixel_computed_i / WIDTH;
-        p_out = (image[(d-1)*WIDTH] + image[pixel_computed_i] + image[pixel_computed_i-1] + image[(d+1)*WIDTH])/4;
+        p_out = ( image[(d-1)*WIDTH+r-1] + image[(d-1)*WIDTH+r] 
+                + image[pixel_computed_i-1] + image[pixel_computed_i] 
+                + image[(d+1)*WIDTH+r-1] + image[(d+1)*WIDTH+r]
+                )/6;
     }
     else if (pixel_computed_i >= (HEIGHT-1)*WIDTH) // bord bas
     {
-        int d = pixel_computed_i / WIDTH;
-        p_out = (image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1] + image[(d-1)*WIDTH])/4;
+        p_out = ( image[(d-1)*WIDTH+r-1] + image[(d-1)*WIDTH+r] + image[(d-1)*WIDTH+r+1] 
+                + image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1] 
+                )/6;
     }
     else // intérieur de l'image
     {
-        int d = pixel_computed_i / WIDTH;
-        int r = pixel_computed_i % WIDTH;
         p_out = ( image[(d-1)*WIDTH-1+r] + image[(d-1)*WIDTH+r] + image[(d-1)*WIDTH+1+r] 
                 + image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1]
                 + image[(d+1)*WIDTH-1+r] + image[(d+1)*WIDTH+r] + image[(d+1)*WIDTH+1+r] 
