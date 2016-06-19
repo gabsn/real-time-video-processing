@@ -4,8 +4,15 @@
 #include <png.h>
 
 #define SIZE 720*576
+
 #define WIDTH 720
 #define HEIGHT 576
+
+#define W2 360
+#define H2 288
+
+#define W4 180
+#define H4 144
 
 // Une image est un tableau de pixels (unsigned char, pour une image en niveaux de gris)
 // On ne définit pas sa taille à l'avance, cela permettra de faire des simulations avec des images plus petites...
