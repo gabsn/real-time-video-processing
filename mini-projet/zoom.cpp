@@ -7,7 +7,7 @@ void ZOOM::zoom() {
         nb_p_received = 0;
         nb_p_active = 0;
         i_image_out = 0;
-        line_counter = W2;
+        line_counter = 0;
         p_out = 0;
         h_out = false;
         v_out = false;
@@ -48,7 +48,6 @@ void ZOOM::zoom() {
      * Gestion des sorties
      **********************/
     if ((line_counter > 0) && (i_image_out < SIZE)) {
-        //cout << "(new_line && (i_image_out < SIZE)) = true : line_counter = " << line_counter << endl;
         line_counter--;
         p_out = image_out[i_image_out++];
         h_out = true;
