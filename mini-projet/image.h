@@ -5,8 +5,8 @@
 
 #define SIZE 720*576
 
-#define WIDTH 720
-#define HEIGHT 576
+#define W 720
+#define H 576
 
 #define W2 360
 #define H2 288
