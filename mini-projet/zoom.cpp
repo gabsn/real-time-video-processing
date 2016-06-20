@@ -38,8 +38,8 @@ void ZOOM::zoom_with_latency() {
         for (unsigned int j=0; j<W2; j++) { // On remplit un carré de 4 pixels conjoints à la même valeur
             image_out[2*i*WIDTH+2*j] = image_received[i*W2+j];
             image_out[2*i*WIDTH+2*j+1] = image_received[i*W2+j];
-            image_out[2*(i+1)*WIDTH+2*j] = image_received[i*W2+j];
-            image_out[2*(i+1)*WIDTH+2*j+1] = image_received[i*W2+j];
+            image_out[(2*i+1)*WIDTH+2*j] = image_received[i*W2+j];
+            image_out[(2*i+1)*WIDTH+2*j+1] = image_received[i*W2+j];
         }
         new_line = true;
     }
