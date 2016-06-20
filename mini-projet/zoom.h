@@ -24,10 +24,15 @@ SC_MODULE(ZOOM) {
      *  constructeur
      **************************************************/
     SC_CTOR(ZOOM) {
+        //zoom_with_latency()
+        line_counter = 0;
         nb_p_received = 0;
+        nb_p_active = 0;
         i_image_out = 0;
+        new_line = false;
         image_received = new unsigned char[SIZE];
 
+        //zoom()
         pixel_counter = 0;
         p_in_counter = 0;
         p_out_counter = 0;
@@ -38,7 +43,7 @@ SC_MODULE(ZOOM) {
         image_in = new unsigned char[H2*W2];
         image_out = new unsigned char[SIZE];
 
-        SC_METHOD(zoom_latency);
+        SC_METHOD(zoom_with_latency);
         sensitive << clk.pos();
         async_reset_signal_is(reset_n,false);
     }
@@ -47,13 +52,18 @@ SC_MODULE(ZOOM) {
      *  méthodes et champs internes
      **************************************************/
     private:
+    void zoom_with_latency();
     void zoom();
-    void zoom_latency();
 
+    // zoom_with_latency() attributes
     unsigned char * image_received;
     unsigned int nb_p_received;
+    unsigned int nb_p_active;
     unsigned int i_image_out;
+    unsigned int line_counter;
+    bool new_line;
 
+    // zoom() attributes
     unsigned char * image_in;
     unsigned char * image_out;
     unsigned int pixel_counter;
