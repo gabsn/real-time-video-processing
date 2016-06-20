@@ -30,7 +30,7 @@ SC_MODULE(ZOOM) {
         nb_p_active = 0;
         i_image_out = 0;
         new_line = false;
-        image_received = new unsigned char[SIZE];
+        image_received = new unsigned char[H2*W2];
 
         //zoom()
         pixel_counter = 0;
