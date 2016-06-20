@@ -24,6 +24,10 @@ SC_MODULE(ZOOM) {
      *  constructeur
      **************************************************/
     SC_CTOR(ZOOM) {
+        nb_p_received = 0;
+        i_image_out = 0;
+        image_received = new unsigned char[SIZE];
+
         pixel_counter = 0;
         p_in_counter = 0;
         p_out_counter = 0;
@@ -31,11 +35,10 @@ SC_MODULE(ZOOM) {
         i_out = 0;
         j_in = 0;
         j_out = 0;
-
         image_in = new unsigned char[H2*W2];
         image_out = new unsigned char[SIZE];
 
-        SC_METHOD(zoom);
+        SC_METHOD(zoom_latency);
         sensitive << clk.pos();
         async_reset_signal_is(reset_n,false);
     }
@@ -45,6 +48,11 @@ SC_MODULE(ZOOM) {
      **************************************************/
     private:
     void zoom();
+    void zoom_latency();
+
+    unsigned char * image_received;
+    unsigned int nb_p_received;
+    unsigned int i_image_out;
 
     unsigned char * image_in;
     unsigned char * image_out;
