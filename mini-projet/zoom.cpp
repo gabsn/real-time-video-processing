@@ -19,28 +19,29 @@ void ZOOM::zoom() {
     /***********************
      * Réception de l'image
      ***********************/
-    if (h_in && ACTIVE_RANGE) {
-        image_received[nb_p_active++] = p_in;
-        nb_p_received++;
-    } else if (nb_p_received == SIZE) {
-        nb_p_received = 0;
-        nb_p_active = 0;
-    } else if (h_in) {
-        nb_p_received++;
+    if ((h_in && (v_in && nb_p_received < 3*W)) || (h_in && (!v_in && nb_p_received >= 3*W))) {
+        if (nb_p_received < SIZE) {
+            nb_p_received++;
+        } else {
+            nb_p_received = 0;
+            nb_p_active = 0;
+        }
+        if (ACTIVE_RANGE)
+            image_received[nb_p_active++] = p_in;
     }
 
     /******************************
     * Gestion de l'image de sortie
     *******************************/
-    if (i_in > H4 && i_in <= H4+H2 && j_in == W4) { // On vient de récupérer une ligne de l'image que l'on veut afficher
-        int i = i_in-(H4+1);
+    if (ACTIVE_RANGE && j_in == W4+W2-1) { // On vient de récupérer une ligne de l'image que l'on veut afficher
+        int i = i_in-H4;
         for (unsigned int j=0; j<W2; j++) { // On remplit un carré de 4 pixels conjoints à la même valeur (Vérifié)
             image_out[2*i*W+2*j] = image_received[i*W2+j];
             image_out[2*i*W+2*j+1] = image_received[i*W2+j];
             image_out[(2*i+1)*W+2*j] = image_received[i*W2+j];
             image_out[(2*i+1)*W+2*j+1] = image_received[i*W2+j];
         }
-        line_counter = 2*W2;
+        line_counter += 2*W2;
     } 
 
     /**********************
@@ -53,7 +54,6 @@ void ZOOM::zoom() {
         h_out = true;
         v_out = (i_image_out < 3*W) ? true : false;
     } else if (i_image_out == SIZE) {
-        line_counter = 0;
         i_image_out = 0;
         p_out = 0;
         h_out = false;
