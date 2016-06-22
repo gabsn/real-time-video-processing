@@ -24,13 +24,9 @@ SC_MODULE(ZOOM) {
      *  constructeur
      **************************************************/
     SC_CTOR(ZOOM) {
-        line_counter   = 0;
-        i_in           = 0;
-        j_in           = 0;
         nb_p_received  = 0;
         nb_p_active    = 0;
         i_image_out    = 0;
-        line_index     = 0;
         image_received = new unsigned char[H2*W2];
         image_out      = new unsigned char[SIZE];
 
@@ -45,16 +41,11 @@ SC_MODULE(ZOOM) {
     private:
     void zoom();
 
-    unsigned char * image_received;
     unsigned int nb_p_received;
     unsigned int nb_p_active;
     unsigned int i_image_out;
-    unsigned int line_counter;
-    unsigned int line_index;
-
+    unsigned char * image_received;
     unsigned char * image_out;
-    unsigned int i_in;
-    unsigned int j_in;
 };
 
 #endif
