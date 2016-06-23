@@ -24,9 +24,12 @@ SC_MODULE(ZOOM) {
      *  constructeur
      **************************************************/
     SC_CTOR(ZOOM) {
+        new_image = false;
         nb_p_received  = 0;
         nb_p_active    = 0;
         i_image_out    = 0;
+        count          = 0;
+        total_count    = 0;
         image_received = new unsigned char[H2*W2];
         image_out      = new unsigned char[SIZE];
 
@@ -41,9 +44,12 @@ SC_MODULE(ZOOM) {
     private:
     void zoom();
 
+    bool new_image;
     unsigned int nb_p_received;
     unsigned int nb_p_active;
     unsigned int i_image_out;
+    unsigned int count;
+    unsigned int total_count;
     unsigned char * image_received;
     unsigned char * image_out;
 };

@@ -25,7 +25,6 @@ void ZOOM::zoom() {
         if (nb_p_received < SIZE) {
             nb_p_received++;
         } else {
-            //cout << "reset image_received : nb_p_received = " << nb_p_received << " & nb_p_active = " << nb_p_active << endl;
             nb_p_received = 0;
             nb_p_active = 0;
         }
@@ -51,8 +50,12 @@ void ZOOM::zoom() {
         p_out = image_out[i_image_out++];
         h_out = true;
         v_out = (i_image_out < 3*W) ? true : false;
-    } else {
+    } else if (i_image_out == SIZE) {
         i_image_out = 0;
+        p_out = 0;
+        h_out = false;
+        v_out = false;
+    } else {
         p_out = 0;
         h_out = false;
         v_out = false;
