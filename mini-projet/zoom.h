@@ -51,7 +51,7 @@ SC_MODULE(ZOOM) {
     unsigned int nb_p_received;
     unsigned int nb_p_active;
     unsigned int i_out;
-    unsigned int j_out;
+    int j_out;
     unsigned int i_image_out;
     unsigned int count;
     unsigned int total_count;

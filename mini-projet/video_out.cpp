@@ -8,10 +8,11 @@ using namespace std;
 
 void VIDEO_OUT::writer() {
     if(reset_n == false) {
-        // Reset : on remet tous les paramètres à  zéro
         pixel_counter = 0;
-    } else if ((href && (vref && pixel_counter < 3*W)) || (href && (!vref && pixel_counter >= 3*W))) {
-        // On écrit dans le tableau de pixels
+        image_counter = 0;
+    } 
+    
+    if ((href && (vref && pixel_counter < 3*W)) || (href && (!vref && pixel_counter >= 3*W))) {
         if (pixel_counter < SIZE)
             image->pixel[pixel_counter++] = pixel_in;
         else

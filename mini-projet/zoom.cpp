@@ -29,14 +29,15 @@ void ZOOM::zoom() {
             nb_p_received = 0;
             nb_p_active = 0;
         }
-        if (ACTIVE_RANGE)
+        if (ACTIVE_RANGE) {
             image_received[nb_p_active++] = p_in;
+        }
     }
 
     /***********************
      * Gestion des sorties *
      ***********************/
-    if (i_out < H2 && j_out < W2) {
+    if (i_out < H2 && j_out >= 0 && j_out < W2) {
         p_out = image_received[i_out*W2+j_out];
         h_out = true;
         v_out = (i_out == 0 || (i_out == 1 && restart == true)) ? true : false;
@@ -48,13 +49,12 @@ void ZOOM::zoom() {
         v_out = false;
 
         i_out = (i_out == H2) ? 0 : i_out;
+        j_out++;
 
-        if (j_out >= W2 && j_out < W2+W_MARGIN-1) {
-            j_out++; // on est dans la zone de marge
-        } else if (j_out == W2+W_MARGIN-1 && restart) {
+        if (j_out == W2+W_MARGIN && restart) {
             j_out = 0;
             restart = false;
-        } else if (j_out == W2+W_MARGIN-1 && !restart) {
+        } else if (j_out == W2+W_MARGIN && !restart) {
             i_out++;
             j_out = 0;
             restart = true;
