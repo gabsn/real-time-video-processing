@@ -27,6 +27,8 @@ SC_MODULE(ZOOM) {
         new_image = false;
         nb_p_received  = 0;
         nb_p_active    = 0;
+        i_out = 0;
+        j_out = 0;
         i_image_out    = 0;
         count          = 0;
         total_count    = 0;
@@ -45,8 +47,11 @@ SC_MODULE(ZOOM) {
     void zoom();
 
     bool new_image;
+    bool restart;
     unsigned int nb_p_received;
     unsigned int nb_p_active;
+    unsigned int i_out;
+    unsigned int j_out;
     unsigned int i_image_out;
     unsigned int count;
     unsigned int total_count;
