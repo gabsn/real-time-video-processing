@@ -25,8 +25,10 @@ SC_MODULE(ZOOM) {
      **************************************************/
     SC_CTOR(ZOOM) {
         new_image = false;
+        restart = true;
         nb_p_received  = 0;
         nb_p_active    = 0;
+        nb_p_tot    = 0;
         i_out = 0;
         j_out = 0;
         i_image_out    = 0;
@@ -35,21 +37,25 @@ SC_MODULE(ZOOM) {
         image_received = new unsigned char[H2*W2];
         image_out      = new unsigned char[SIZE];
 
-        SC_METHOD(zoom);
-        sensitive << clk.pos();
-        async_reset_signal_is(reset_n,false);
+        SC_CTHREAD(reception,clk.pos());
+        SC_CTHREAD(envoi,clk.pos());
     }
 
     /***************************************************
      *  méthodes et champs internes
      **************************************************/
     private:
-    void zoom();
+    void reception();
+    void envoi();
 
     bool new_image;
     bool restart;
     unsigned int nb_p_received;
+    unsigned int nb_p_tot;
     unsigned int nb_p_active;
+    unsigned int margin;
+    unsigned int i_in;
+    unsigned int j_in;
     unsigned int i_out;
     unsigned int j_out;
     unsigned int i_image_out;
