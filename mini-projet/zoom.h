@@ -8,6 +8,18 @@
  *  définition du module
  **************************************/
 SC_MODULE(ZOOM) {
+    bool new_image;
+    bool restart;
+    unsigned int nb_p_received;
+    unsigned int nb_p_tot;
+    unsigned int nb_p_active;
+    unsigned int margin;
+    unsigned int i_in;
+    unsigned int j_in;
+    unsigned int i_tot;
+    unsigned int j_tot;
+    unsigned int i_out;
+    unsigned int j_out;
 
     // IO PORTS
     sc_in<bool>          clk;
@@ -37,27 +49,16 @@ SC_MODULE(ZOOM) {
         image_received = new unsigned char[H2*W2];
         image_out      = new unsigned char[SIZE];
 
-        SC_CTHREAD(reception,clk.pos());
-        SC_CTHREAD(envoi,clk.pos());
+        SC_METHOD(zoom);
+        sensitive << clk.pos();
     }
 
     /***************************************************
      *  méthodes et champs internes
      **************************************************/
     private:
-    void reception();
-    void envoi();
+    void zoom();
 
-    bool new_image;
-    bool restart;
-    unsigned int nb_p_received;
-    unsigned int nb_p_tot;
-    unsigned int nb_p_active;
-    unsigned int margin;
-    unsigned int i_in;
-    unsigned int j_in;
-    unsigned int i_out;
-    int j_out;
     unsigned int i_image_out;
     unsigned int count;
     unsigned int total_count;

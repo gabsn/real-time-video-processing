@@ -104,6 +104,10 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
     TRACE( signal_pixel_2 );
+    TRACE( zoom.nb_p_received);
+    TRACE( zoom.i_out);
+    TRACE( zoom.j_out);
+    TRACE( zoom.nb_p_tot);
     
 #undef TRACE
 
