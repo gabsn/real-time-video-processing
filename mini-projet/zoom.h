@@ -13,6 +13,7 @@ SC_MODULE(ZOOM) {
     bool no_image_received;
     unsigned int nb_p_received;
     unsigned int nb_p_tot;
+    unsigned int nb_p_out;
     unsigned int nb_p_active;
     unsigned int margin;
     unsigned int i_in;
@@ -42,6 +43,7 @@ SC_MODULE(ZOOM) {
         no_image_received = true;
         nb_p_received  = 0;
         nb_p_active    = 0;
+        nb_p_out    = 0;
         nb_p_tot    = 0;
         i_out = 0;
         j_out = 0;
@@ -51,15 +53,18 @@ SC_MODULE(ZOOM) {
         image_received = new unsigned char[H2*W2];
         image_out      = new unsigned char[SIZE];
 
-        SC_METHOD(zoom);
+        SC_METHOD(receiving);
         sensitive << clk.pos();
+
+        SC_CTHREAD(sending,clk.pos());
     }
 
     /***************************************************
      *  méthodes et champs internes
      **************************************************/
     private:
-    void zoom();
+    void receiving();
+    void sending();
 
     unsigned int i_image_out;
     unsigned int count;

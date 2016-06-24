@@ -7,61 +7,42 @@
 #define HB 625
 #define SIZE_B 824*625
 
-void ZOOM::zoom() {
+void ZOOM::receiving() {
     if (!reset_n) {
         nb_p_received = 0;
-        nb_p_active = 0;
-        i_out = 0;
-        j_out = 0;
-        i_tot = 0;
-        j_tot = 0;
-        restart = true;
-        no_image_received = true;
-        new_image = false;
-        p_out = 0;
-        h_out = false;
-        v_out = false;
+        nb_p_out = 0;
     } 
 
-    i_tot = nb_p_tot / WB;
-    j_tot = nb_p_tot % WB;
     i_in = nb_p_received / W;
     j_in = nb_p_received % W;
 
-    /************************
-     * Réception de l'image *
-     ************************/
-    if (no_image_received) {
-        nb_p_tot = (nb_p_tot < SIZE_B-1) ? nb_p_tot+1 : 0;
-        if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
-            if (nb_p_received < SIZE) {
-                nb_p_received++;
-            } else {
-                no_image_received = false;
-                nb_p_received = 0;
-                nb_p_active = 0;
-            }
-            if (ACTIVE_RANGE) {
-                image_received[nb_p_active++] = p_in;
-                if (new_image == false) new_image = true;
-            }
-        }
-    } else if (h_in) {
-        if (nb_p_received < SIZE) {
-            nb_p_received++;
-        } else {
-            nb_p_received = 0;
-            nb_p_active = 0;
-        }
+    if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
+        nb_p_received = (nb_p_received == SIZE-1) ? 0 : nb_p_received+1;
+        nb_p_out = (nb_p_out == W2*H2-1) ? 0 : nb_p_out+1;
+
         if (ACTIVE_RANGE) {
-            image_received[nb_p_active++] = p_in;
-            if (new_image == false) new_image = true;
+            image_received[(i_in-H2)*W2+(j_in-W2)] = p_in;
+            start_sending = true;
         }
     }
+}
 
-    /***********************
-     * Gestion des sorties *
-     ***********************/
+void ZOOM::sending() {
+    while (1) {
+        if (!reset_n) {
+            p_out = 0;
+            h_out = false;
+            v_out = false;
+        }
+
+        wait();
+        if (start_sending) {
+
+            
+
+    i_out = nb_p_out / W2;
+    j_out = nb_p_out % W2;
+    if (
     if (new_image && i_out < H2 && j_out < W2) {
         p_out = image_received[i_out*W2+j_out];
         h_out = true;
