@@ -16,6 +16,9 @@
 #include "filtre.h"
 #include "zoom.h"
 
+#define IS_ZOOM
+#define IS_FILTRE
+
 /***************************************************
  *	MAIN
  **************************************************/
@@ -30,8 +33,7 @@ int sc_main (int argc, char *argv[]) {
         cout
            << endl
            << "Le nombre de cycles de simulation doit être passé en argument (-1 pour une simulation illimitée)"
-           << endl
-           ;
+           << endl;
         exit(1);
     }
 
@@ -45,42 +47,97 @@ int sc_main (int argc, char *argv[]) {
     sc_clock                        signal_clk("Clock", pix_period);
     sc_signal<bool>                 signal_resetn;
 
-    sc_signal<bool>                 signal_vref_1, signal_href_1, signal_vref_2, signal_href_2;
-    sc_signal<unsigned char>        signal_pixel_1, signal_pixel_2;
+    sc_signal<bool>                 signal_vref_1, signal_href_1, signal_vref_2, signal_href_2, signal_vref_3, signal_href_3;
+    sc_signal<unsigned char>        signal_pixel_1, signal_pixel_2, signal_pixel_3;
 
     /********************************************************
      *	Instanciation des modules
      *******************************************************/
-
     VIDEO_IN video_in("VIDEO_GEN");
-    ZOOM zoom("FILTRE_ZOOM");
     VIDEO_OUT video_out("VIDEO_DISP");
+
+#if defined(IS_ZOOM)
+    ZOOM zoom("FILTRE_ZOOM");
+#endif
+
+#if defined(IS_FILTRE)
+    FILTRE filtre("FILTRE_MOY");
+#endif
 
     /*********************************************************
      *	Connexion des composants
      ********************************************************/
 
-    video_in.clk       ( signal_clk     ) ;
-    video_in.reset_n   ( signal_resetn  ) ;
-    video_in.href      ( signal_href_1  ) ;
-    video_in.vref      ( signal_vref_1  ) ;
-    video_in.pixel_out ( signal_pixel_1 ) ;
+    video_in.clk       ( signal_clk     );
+    video_in.reset_n   ( signal_resetn  );
+    video_in.href      ( signal_href_1  );
+    video_in.vref      ( signal_vref_1  );
+    video_in.pixel_out ( signal_pixel_1 );
 
-    zoom.clk         ( signal_clk     ) ;
-    zoom.reset_n     ( signal_resetn  ) ;
-    zoom.h_in        ( signal_href_1  ) ;
-    zoom.v_in        ( signal_vref_1  ) ;
-    zoom.p_in        ( signal_pixel_1 ) ;
-    zoom.h_out       ( signal_href_2  ) ;
-    zoom.v_out       ( signal_vref_2  ) ;
-    zoom.p_out       ( signal_pixel_2 ) ;
+#if !defined (IS_ZOOM) && !defined (IS_FILTRE)
+    video_out.clk      ( signal_clk     );
+    video_out.reset_n  ( signal_resetn  );
+    video_out.pixel_in ( signal_pixel_1 );
+    video_out.href     ( signal_href_1  );
+    video_out.vref     ( signal_vref_1  );
 
+#elif defined (IS_ZOOM) && !defined (IS_FILTRE)
+    zoom.clk           ( signal_clk     );
+    zoom.reset_n       ( signal_resetn  );
+    zoom.h_in          ( signal_href_1  );
+    zoom.v_in          ( signal_vref_1  );
+    zoom.p_in          ( signal_pixel_1 );
+    zoom.h_out         ( signal_href_2  );
+    zoom.v_out         ( signal_vref_2  );
+    zoom.p_out         ( signal_pixel_2 );
 
-    video_out.clk      ( signal_clk     ) ;
-    video_out.reset_n  ( signal_resetn  ) ;
-    video_out.pixel_in ( signal_pixel_2 ) ;
-    video_out.href     ( signal_href_2  ) ;
-    video_out.vref     ( signal_vref_2  ) ;
+    video_out.clk      ( signal_clk     );
+    video_out.reset_n  ( signal_resetn  );
+    video_out.pixel_in ( signal_pixel_2 );
+    video_out.href     ( signal_href_2  );
+    video_out.vref     ( signal_vref_2  );
+
+#elif !defined (IS_ZOOM) && defined (IS_FILTRE)
+    filtre.clk           ( signal_clk     );
+    filtre.reset_n       ( signal_resetn  );
+    filtre.h_in          ( signal_href_1  );
+    filtre.v_in          ( signal_vref_1  );
+    filtre.p_in          ( signal_pixel_1 );
+    filtre.h_out         ( signal_href_2  );
+    filtre.v_out         ( signal_vref_2  );
+    filtre.p_out         ( signal_pixel_2 );
+
+    video_out.clk      ( signal_clk     );
+    video_out.reset_n  ( signal_resetn  );
+    video_out.pixel_in ( signal_pixel_2 );
+    video_out.href     ( signal_href_2  );
+    video_out.vref     ( signal_vref_2  );
+
+#elif defined (IS_ZOOM) && defined (IS_FILTRE)
+    zoom.clk           ( signal_clk     );
+    zoom.reset_n       ( signal_resetn  );
+    zoom.h_in          ( signal_href_1  );
+    zoom.v_in          ( signal_vref_1  );
+    zoom.p_in          ( signal_pixel_1 );
+    zoom.h_out         ( signal_href_2  );
+    zoom.v_out         ( signal_vref_2  );
+    zoom.p_out         ( signal_pixel_2 );
+
+    filtre.clk         ( signal_clk     );
+    filtre.reset_n     ( signal_clk     );
+    filtre.h_in        ( signal_href_2  );
+    filtre.v_in        ( signal_vref_2  );
+    filtre.p_in        ( signal_pixel_2 );
+    filtre.h_out       ( signal_href_3  );
+    filtre.v_out       ( signal_vref_3  );
+    filtre.p_out       ( signal_pixel_3 );
+
+    video_out.clk      ( signal_clk     );
+    video_out.reset_n  ( signal_resetn  );
+    video_out.pixel_in ( signal_pixel_3 );
+    video_out.href     ( signal_href_3  );
+    video_out.vref     ( signal_vref_3  );
+#endif
 
     /*********************************************************
      *	Traces
@@ -101,14 +158,20 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_1 );
     TRACE( signal_vref_1 );
     TRACE( signal_pixel_1 );
+#if (defined (IS_ZOOM) && !defined (IS_FILTRE)) || (!defined (IS_ZOOM) && defined (IS_FILTRE))
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
     TRACE( signal_pixel_2 );
+#elif !defined (IS_ZOOM) && defined (IS_FILTRE)
+    TRACE( signal_href_3 );
+    TRACE( signal_vref_3 );
+    TRACE( signal_pixel_3 );
     TRACE( zoom.nb_p_received);
     TRACE( zoom.nb_p_out);
     TRACE( zoom.i_in);
     TRACE( zoom.j_in);
     TRACE( zoom.start_sending);
+#endif
     
 #undef TRACE
 
