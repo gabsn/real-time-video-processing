@@ -108,6 +108,8 @@ int sc_main (int argc, char *argv[]) {
     TRACE( zoom.i_out);
     TRACE( zoom.j_out);
     TRACE( zoom.nb_p_tot);
+    TRACE( zoom.restart);
+    TRACE( zoom.new_image);
     
 #undef TRACE
 

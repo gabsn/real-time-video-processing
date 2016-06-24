@@ -16,6 +16,7 @@ void ZOOM::zoom() {
         i_tot = 0;
         j_tot = 0;
         restart = true;
+        no_image_received = true;
         new_image = false;
         p_out = 0;
         h_out = false;
@@ -30,8 +31,22 @@ void ZOOM::zoom() {
     /************************
      * Réception de l'image *
      ************************/
-    nb_p_tot = (nb_p_tot < SIZE_B-1) ? nb_p_tot+1 : 0;
-    if ((h_in && v_in && nb_p_received < 3*W) || (h_in && !v_in && nb_p_received >= 3*W)) {
+    if (no_image_received) {
+        nb_p_tot = (nb_p_tot < SIZE_B-1) ? nb_p_tot+1 : 0;
+        if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
+            if (nb_p_received < SIZE) {
+                nb_p_received++;
+            } else {
+                no_image_received = false;
+                nb_p_received = 0;
+                nb_p_active = 0;
+            }
+            if (ACTIVE_RANGE) {
+                image_received[nb_p_active++] = p_in;
+                if (new_image == false) new_image = true;
+            }
+        }
+    } else if (h_in) {
         if (nb_p_received < SIZE) {
             nb_p_received++;
         } else {
