@@ -10,6 +10,7 @@
 SC_MODULE(ZOOM) {
     bool new_image;
     bool restart;
+    sc_signal<bool> start_sending;
     bool no_image_received;
     unsigned int nb_p_received;
     unsigned int nb_p_tot;
@@ -40,6 +41,7 @@ SC_MODULE(ZOOM) {
     SC_CTOR(ZOOM) {
         new_image = false;
         restart = true;
+        start_sending = false;
         no_image_received = true;
         nb_p_received  = 0;
         nb_p_active    = 0;

@@ -11,6 +11,7 @@ void ZOOM::receiving() {
     if (!reset_n) {
         nb_p_received = 0;
         nb_p_out = 0;
+        start_sending = false;
     } 
 
     i_in = nb_p_received / W;
@@ -21,7 +22,7 @@ void ZOOM::receiving() {
         nb_p_out = (nb_p_out == W2*H2-1) ? 0 : nb_p_out+1;
 
         if (ACTIVE_RANGE) {
-            image_received[(i_in-H2)*W2+(j_in-W2)] = p_in;
+            image_received[(i_in-H4)*W2+(j_in-W4)] = p_in;
             start_sending = true;
         }
     }
@@ -35,50 +36,29 @@ void ZOOM::sending() {
             v_out = false;
         }
 
-        wait();
-        if (start_sending) {
+        // On attend pour se synchroniser
+        while (!start_sending) wait();
 
-            
+        for(int i=0; i<625; i++) {
+            for(int j=0; j<874; j++) {
+                // on attend le prochain coup d'horloge
+                wait();
+                // Si on est dans la fenêtre active, on sort le pixel courant
+                // Rappel : une trame vidéo fait 874*625, l'image active est de 720*576
+                if((i<H) && (j<W))
+                    p_out = image_received[i/2*W2+j/2];
+                else
+                    p_out = 0;
 
-    i_out = nb_p_out / W2;
-    j_out = nb_p_out % W2;
-    if (
-    if (new_image && i_out < H2 && j_out < W2) {
-        p_out = image_received[i_out*W2+j_out];
-        h_out = true;
-        v_out = (i_out == 0 || (i_out == 1 && restart == true)) ? true : false;
+                // Génération de HREF
+                // HREF est actif pendant la sortie des pixels actifs
+                h_out = (i<H) && (j<W);
 
-        j_out = (j_tot % 2 != 0) ? j_out + 1 : j_out; 
-    } else if (new_image && i_out < H2 && j_out >= W2) {
-        p_out = 0;
-        h_out = false;
-        v_out = false;
-
-        j_out++;
-
-        if (j_out == W2+W_MARGIN && restart) {
-            j_out = 0;
-            restart = false;
-        } else if (j_out == W2+W_MARGIN && !restart) {
-            i_out++;
-            j_out = 0;
-            restart = true;
+                // Génération de VREF
+                // VREF est actif pendant les 3 premières lignes d'une image
+                v_out = (i<3);
+            }
         }
-    } else if (new_image && i_out == H2) {
-        p_out = 0;
-        h_out = false;
-        v_out = false;
-
-        i_out = 0;
-        j_out = 0;
-        restart = true;
-        new_image = false;
-    } else {
-        p_out = 0;
-        h_out = false;
-        v_out = false;
     }
-
-    //cout << "i_out : " << i_out << " & j_out : " << j_out << endl;
 }
 
