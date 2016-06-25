@@ -16,7 +16,9 @@
 #include "filtre.h"
 #include "zoom.h"
 
-#define IS_ZOOM
+#define TRACE(x) sc_trace(my_trace_file, x, #x)
+
+//#define IS_ZOOM
 #define IS_FILTRE
 
 /***************************************************
@@ -148,8 +150,6 @@ int sc_main (int argc, char *argv[]) {
     my_trace_file = sc_create_vcd_trace_file ("simulation_trace");
     my_trace_file->set_time_unit(1,SC_NS);
 
-#define TRACE(x) sc_trace(my_trace_file, x, #x)
-
     /* chronogrammes signaux CLK et NRESET */
     TRACE( signal_clk );
     TRACE( signal_resetn );
@@ -162,15 +162,18 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
     TRACE( signal_pixel_2 );
-#elif !defined (IS_ZOOM) && defined (IS_FILTRE)
+#elif defined (IS_ZOOM) && defined (IS_FILTRE)
+    TRACE( signal_href_2 );
+    TRACE( signal_vref_2 );
+    TRACE( signal_pixel_2 );
     TRACE( signal_href_3 );
     TRACE( signal_vref_3 );
     TRACE( signal_pixel_3 );
-    TRACE( zoom.nb_p_received);
-    TRACE( zoom.nb_p_out);
-    TRACE( zoom.i_in);
-    TRACE( zoom.j_in);
-    TRACE( zoom.start_sending);
+    //TRACE( zoom.nb_p_received);
+    //TRACE( zoom.nb_p_out);
+    //TRACE( zoom.i_in);
+    //TRACE( zoom.j_in);
+    //TRACE( zoom.start_sending);
 #endif
     
 #undef TRACE
