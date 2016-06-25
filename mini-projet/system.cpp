@@ -59,11 +59,11 @@ int sc_main (int argc, char *argv[]) {
     VIDEO_OUT video_out("VIDEO_DISP");
 
 #if defined(IS_ZOOM)
-    ZOOM zoom("FILTRE_ZOOM");
+    ZOOM zoom("ZOOM");
 #endif
 
 #if defined(IS_FILTRE)
-    FILTRE filtre("FILTRE_MOY");
+    FILTRE filtre("MOY");
 #endif
 
     /*********************************************************
@@ -162,8 +162,6 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
     TRACE( signal_pixel_2 );
-    TRACE( filtre.nb_p_received);
-    TRACE( filtre.start_sending);
 #elif defined (IS_ZOOM) && defined (IS_FILTRE)
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
@@ -171,11 +169,6 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_3 );
     TRACE( signal_vref_3 );
     TRACE( signal_pixel_3 );
-    //TRACE( zoom.nb_p_received);
-    //TRACE( zoom.nb_p_out);
-    //TRACE( zoom.i_in);
-    //TRACE( zoom.j_in);
-    //TRACE( zoom.start_sending);
 #endif
     
 #undef TRACE
