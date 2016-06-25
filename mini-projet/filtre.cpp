@@ -1,107 +1,108 @@
 #include "filtre.h"
 
-void FILTRE::gen_p_out() {
-    int d = pixel_computed_i / W;
-    int r = pixel_computed_i % W;
+#define R 3
 
-    if (pixel_computed_i == 0) // pixel en haut à gauche
-    { 
-        p_out = (image[0] + image[1] + image[W] + image[W+1])/4; 
-    } 
-    else if (pixel_computed_i == W-1) // pixel en haut à droite
-    {
-        p_out = (image[W-2] + image[W-1] + image[2*W-2] + image[2*W-1])/4;
-    } 
-    else if (pixel_computed_i == (H-1)*W) // pixel en bas à gauche
-    {
-        p_out = (image[(H-2)*W] + image[(H-2)*W+1] + image[(H-1)*W] + image[(H-1)*W+1])/4;
+void FILTRE::receiving() {
+    if (!reset_n) {
+        nb_p_received = 0;
+        start_sending = false;
     }
-    else if (pixel_computed_i == SIZE-1) // pixel en bas à droite
-    {
-        p_out = (image[(H-2)*W-2] + image[(H-1)*W-1] + image[H*W-2] + image[H*W-1])/4;
-    }
-    else if (pixel_computed_i < W-1) // bord haut
-    {
-        p_out = ( image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1]
-                + image[(d+1)*W-1+r] + image[(d+1)*W+r] + image[(d+1)*W+1+r] 
-                )/6; 
-    }
-    else if (pixel_computed_i % W == 0) // bord gauche
-    {
-        p_out = ( image[(d-1)*W] + image[(d-1)*W+1]
-                + image[pixel_computed_i] + image[pixel_computed_i+1]
-                + image[(d+1)*W] + image[(d+1)*W+1]
-                )/6; 
-    }
-    else if (pixel_computed_i % W == W-1) // bord droit
-    {
-        p_out = ( image[(d-1)*W+r-1] + image[(d-1)*W+r] 
-                + image[pixel_computed_i-1] + image[pixel_computed_i] 
-                + image[(d+1)*W+r-1] + image[(d+1)*W+r]
-                )/6;
-    }
-    else if (pixel_computed_i >= (H-1)*W) // bord bas
-    {
-        p_out = ( image[(d-1)*W+r-1] + image[(d-1)*W+r] + image[(d-1)*W+r+1] 
-                + image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1] 
-                )/6;
-    }
-    else // intérieur de l'image
-    {
-        p_out = ( image[(d-1)*W-1+r] + image[(d-1)*W+r] + image[(d-1)*W+1+r] 
-                + image[pixel_computed_i-1] + image[pixel_computed_i] + image[pixel_computed_i+1]
-                + image[(d+1)*W-1+r] + image[(d+1)*W+r] + image[(d+1)*W+1+r] 
-                )/9; 
-        //cout << "initial_pixel(" << pixel_computed_i << ") = " << (int)image[pixel_computed_i] << " & p_out = " << (int)p_out <<  " : " << endl;
-        //cout << (int)image[(d-1)*W-1] << " " << (int)image[(d-1)*W] << " " << (int)image[(d-1)*W+1] << " " << endl 
-        //     << (int)image[pixel_computed_i-1] << " " << (int)image[pixel_computed_i] << " " << (int)image[pixel_computed_i+1] << " " << endl
-        //     << (int)image[(d+1)*W-1] << " " << (int)image[(d+1)*W] << " " << (int)image[(d+1)*W+1] << " " << endl;
+
+    if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
+        if (nb_p_received < SIZE-1) {
+            image_received[nb_p_received++] = p_in;
+        } else {
+            nb_p_received = 0;
+            start_sending = false;
+        }
+
+        if (nb_p_received >= W+1)
+            start_sending = true;
     }
 }
 
-void FILTRE::average() {
-    if (!reset_n) {
-        pixel_received_i = 0;
-        pixel_computed_i = 0;
-        p_out = 0;
-        h_out = false;
-        v_out = false;
-    } else if (h_in && pixel_received_i < W+1 && v_in) { // Première ligne de pixels + premier pixel de la première cologne
-        image[pixel_received_i++] = p_in;
-        p_out = 0;
-        h_out = false;
-        v_out = false;
-    } else if (h_in && pixel_received_i >= W+1) { // On calcule p_out tout en recevant des pixels
-        image[pixel_received_i] = p_in; 
-        gen_p_out();
-        h_out = true;
-        // Gestion du signal v_ref
-        if (pixel_computed_i < 3*W)
-            v_out = true;
-        else 
+void FILTRE::sending() {
+    while (1) {
+        if (!reset_n) {
+            p_out = 0;
+            h_out = false;
             v_out = false;
+        }
 
-        // Gestion des indices du pixel reçu et du pixel calculé
-        if (pixel_received_i < SIZE-1) {
-            pixel_received_i++;
-            pixel_computed_i++;
-        } else if (pixel_received_i == SIZE-1) {
-            pixel_received_i = 0;
-            pixel_computed_i++;
+        // On attend pour se synchroniser
+        while (!start_sending) wait();
+
+        for(int i=0; i<625; i++) {
+            for(int j=0; j<874; j++) {
+                // on attend le prochain coup d'horloge
+                wait();
+                // Si on est dans la fenêtre active, on sort le pixel courant
+                // Rappel : une trame vidéo fait 874*625, l'image active est de 720*576
+                if((i<H) && (j<W))
+                    p_out = gen_pix(i,j);
+                else
+                    p_out = 0;
+
+                // Génération de HREF
+                // HREF est actif pendant la sortie des pixels actifs
+                h_out = (i<H) && (j<W);
+
+                // Génération de VREF
+                // VREF est actif pendant les 3 premières lignes d'une image
+                v_out = (i<3);
+            }
         }
-    } else if (!h_in && pixel_received_i == 0 && pixel_computed_i != 0) { // On a tous les pixels de l'image active en notre possession
-        gen_p_out(); 
-        h_out = true;
-        v_out = false;
-        if (pixel_computed_i < SIZE-1) {
-            pixel_computed_i++;
-        } else if (pixel_computed_i == SIZE-1) {
-            pixel_computed_i = 0;
-        }
-    } else {
-        p_out = 0;
-        h_out = false;
-        v_out = false;
     }
+}
+
+unsigned char FILTRE::gen_pix(int i, int j) {
+    double result = 0;
+    int coeff[R][R] = {{1,1,1}
+                      ,{1,1,1}
+                      ,{1,1,1}
+                      };
+
+    // On calcule le "poid" de la matrice de convolution
+    unsigned int poid = 0;
+    for (int l=0; l<R; l++)
+        for (int c=0; c<R; c++)
+            poid += coeff[l][c];
+    if (poid == 0) poid = 1;
+    
+    // On gère les bords par "effet miroir"
+    if (j == 0) {
+        for (int l=0; l<R; l++) {
+            coeff[l][0] = 0;
+            coeff[l][2] *= 2;
+        }
+    } else if (j == W-1) {
+        for (int l=0; l<R; l++) {
+            coeff[l][0] *= 2;
+            coeff[l][2] = 0;
+        }
+    }
+    if (i == 0) {
+        for (int c=0; c<R; c++) {
+            coeff[0][c] = 0;
+            coeff[2][c] *= 2;
+        }
+    } else if (i == H-1) {
+        for (int c=0; c<R; c++) {
+            coeff[0][c] *= 2;
+            coeff[2][c] = 0;
+        }
+    }
+
+    // On applique la convolution 
+    for (int l=0; l<R; ++l) {
+        for (int c=0; c<R; ++c) {
+            if (coeff[l][c] != 0) {
+                result += coeff[l][c]*image_received[(i-1+l)*W+(j-1+c)];
+            }
+        }
+    }
+    result /= poid;
+
+    return (unsigned char)result;
 }
 

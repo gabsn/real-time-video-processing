@@ -8,6 +8,8 @@
  *  définition du module
  **************************************/
 SC_MODULE(FILTRE) {
+    unsigned int nb_p_received;
+    sc_signal<bool> start_sending;
 
     // IO PORTS
     sc_in<bool>          clk;
@@ -24,12 +26,15 @@ SC_MODULE(FILTRE) {
      *  constructeur
      **************************************************/
     SC_CTOR(FILTRE) {
-        pixel_received_i = 0;
-        pixel_computed_i = 0;
-        image = new unsigned char[SIZE];
+        image_received = new unsigned char[SIZE];
+        nb_p_received = 0;
+        start_sending = false;
 
-        SC_METHOD(average);
+        SC_METHOD(receiving);
         sensitive << clk.pos();
+        async_reset_signal_is(reset_n,false);
+
+        SC_CTHREAD(sending,clk.pos());
         async_reset_signal_is(reset_n,false);
     }
 
@@ -37,12 +42,11 @@ SC_MODULE(FILTRE) {
      *  méthodes et champs internes
      **************************************************/
     private:
-    void average();
-    void gen_p_out();
+    void receiving();
+    void sending();
+    unsigned char gen_pix(int,int);
 
-    unsigned char * image;
-    unsigned int pixel_received_i;
-    unsigned int pixel_computed_i;
+    unsigned char * image_received;
 };
 
 #endif

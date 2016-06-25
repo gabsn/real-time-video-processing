@@ -162,6 +162,8 @@ int sc_main (int argc, char *argv[]) {
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
     TRACE( signal_pixel_2 );
+    TRACE( filtre.nb_p_received);
+    TRACE( filtre.start_sending);
 #elif defined (IS_ZOOM) && defined (IS_FILTRE)
     TRACE( signal_href_2 );
     TRACE( signal_vref_2 );
