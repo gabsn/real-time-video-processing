@@ -20,6 +20,7 @@
 
 //#define IS_ZOOM
 #define IS_FILTRE
+//#define EDGE_DETECTION
 
 /***************************************************
  *	MAIN
@@ -63,11 +64,19 @@ int sc_main (int argc, char *argv[]) {
 #endif
 
 #if defined(IS_FILTRE)
-    int moy[R][R] = { {1,1,1},
-                      {1,1,1},
-                      {1,1,1}
-                    }; 
+    #if defined(EDGE_DETECTION)
+    double edge[R][R] = { {0,1,0},
+                          {1,-4,1},
+                          {0,1,0}
+                        }; 
+    FILTRE filtre("EDGE",edge);
+    #else
+    double moy[R][R] = { {1,1,1},
+                         {1,1,1},
+                         {1,1,1}
+                       }; 
     FILTRE filtre("MOY",moy);
+    #endif
 #endif
 
     /*********************************************************

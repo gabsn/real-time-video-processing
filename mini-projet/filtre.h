@@ -28,7 +28,7 @@ SC_MODULE(FILTRE) {
      *  constructeur
      **************************************************/
     SC_HAS_PROCESS(FILTRE);
-    FILTRE(sc_module_name _name, int _coeff[][R]) : sc_module(_name) {
+    FILTRE(sc_module_name _name, double _coeff[][R]) : sc_module(_name) {
         image_received = new unsigned char[SIZE];
         nb_p_received = 0;
         start_sending = false;
@@ -56,7 +56,7 @@ SC_MODULE(FILTRE) {
     unsigned char gen_pix(int,int);
 
     unsigned char * image_received;
-    int coeff[R][R];
+    double coeff[R][R];
 };
 
 #endif

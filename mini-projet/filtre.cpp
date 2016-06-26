@@ -53,18 +53,15 @@ void FILTRE::sending() {
 }
 
 unsigned char FILTRE::gen_pix(int i, int j) {
-    int matrix[R][R];
+    double matrix[R][R];
     double result = 0;
-    unsigned int poid = 0;
 
-    // On calcule le "poid" de la matrice de convolution
+    // On copie la matrice de convolution du filtre pour pouvoir la modifier
     for (int l=0; l<R; l++) {
         for (int c=0; c<R; c++) {
             matrix[l][c] = coeff[l][c];
-            poid += coeff[l][c];
         }
     }
-    if (poid == 0) poid = 1;
     
     // On gère les bords par "effet miroir"
     if (j == 0) {
@@ -98,7 +95,7 @@ unsigned char FILTRE::gen_pix(int i, int j) {
             }
         }
     }
-    result /= poid;
+    result /= 9;
 
     return (unsigned char)result;
 }
