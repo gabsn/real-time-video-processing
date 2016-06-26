@@ -1,7 +1,5 @@
 #include "filtre.h"
 
-#define R 3
-
 void FILTRE::receiving() {
     if (!reset_n) {
         nb_p_received = 0;
@@ -31,7 +29,6 @@ void FILTRE::sending() {
 
         // On attend pour se synchroniser
         while (!start_sending) wait();
-
         for(int i=0; i<625; i++) {
             for(int j=0; j<874; j++) {
                 // on attend le prochain coup d'horloge
@@ -56,48 +53,48 @@ void FILTRE::sending() {
 }
 
 unsigned char FILTRE::gen_pix(int i, int j) {
+    int matrix[R][R];
     double result = 0;
-    int coeff[R][R] = {{1,1,1}
-                      ,{1,1,1}
-                      ,{1,1,1}
-                      };
+    unsigned int poid = 0;
 
     // On calcule le "poid" de la matrice de convolution
-    unsigned int poid = 0;
-    for (int l=0; l<R; l++)
-        for (int c=0; c<R; c++)
+    for (int l=0; l<R; l++) {
+        for (int c=0; c<R; c++) {
+            matrix[l][c] = coeff[l][c];
             poid += coeff[l][c];
+        }
+    }
     if (poid == 0) poid = 1;
     
     // On gère les bords par "effet miroir"
     if (j == 0) {
         for (int l=0; l<R; l++) {
-            coeff[l][0] = 0;
-            coeff[l][2] *= 2;
+            matrix[l][0] = 0;
+            matrix[l][2] *= 2;
         }
     } else if (j == W-1) {
         for (int l=0; l<R; l++) {
-            coeff[l][0] *= 2;
-            coeff[l][2] = 0;
+            matrix[l][0] *= 2;
+            matrix[l][2] = 0;
         }
     }
     if (i == 0) {
         for (int c=0; c<R; c++) {
-            coeff[0][c] = 0;
-            coeff[2][c] *= 2;
+            matrix[0][c] = 0;
+            matrix[2][c] *= 2;
         }
     } else if (i == H-1) {
         for (int c=0; c<R; c++) {
-            coeff[0][c] *= 2;
-            coeff[2][c] = 0;
+            matrix[0][c] *= 2;
+            matrix[2][c] = 0;
         }
     }
 
     // On applique la convolution 
     for (int l=0; l<R; ++l) {
         for (int c=0; c<R; ++c) {
-            if (coeff[l][c] != 0) {
-                result += coeff[l][c]*image_received[(i-1+l)*W+(j-1+c)];
+            if (matrix[l][c] != 0) {
+                result += matrix[l][c]*image_received[(i-1+l)*W+(j-1+c)];
             }
         }
     }

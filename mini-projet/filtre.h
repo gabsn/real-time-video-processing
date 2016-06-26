@@ -4,6 +4,8 @@
 #include <systemc.h>
 #include "image.h"
 
+#define R 3
+
 /***************************************
  *  définition du module
  **************************************/
@@ -25,10 +27,17 @@ SC_MODULE(FILTRE) {
     /***************************************************
      *  constructeur
      **************************************************/
-    SC_CTOR(FILTRE) {
+    SC_HAS_PROCESS(FILTRE);
+    FILTRE(sc_module_name _name, int _coeff[][R]) : sc_module(_name) {
         image_received = new unsigned char[SIZE];
         nb_p_received = 0;
         start_sending = false;
+        for (int l=0; l<R; ++l)
+            for (int c=0; c<R; ++c) {
+                coeff[l][c] = _coeff[l][c];
+                cout << coeff[l][c] << " ";
+            }
+        cout << endl;
 
         SC_METHOD(receiving);
         sensitive << clk.pos();
@@ -47,6 +56,7 @@ SC_MODULE(FILTRE) {
     unsigned char gen_pix(int,int);
 
     unsigned char * image_received;
+    int coeff[R][R];
 };
 
 #endif

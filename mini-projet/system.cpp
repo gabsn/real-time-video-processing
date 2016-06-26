@@ -63,7 +63,11 @@ int sc_main (int argc, char *argv[]) {
 #endif
 
 #if defined(IS_FILTRE)
-    FILTRE filtre("MOY");
+    int moy[R][R] = { {1,1,1},
+                      {1,1,1},
+                      {1,1,1}
+                    }; 
+    FILTRE filtre("MOY",moy);
 #endif
 
     /*********************************************************
