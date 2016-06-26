@@ -10,8 +10,10 @@
  *  définition du module
  **************************************/
 SC_MODULE(FILTRE) {
-    unsigned int nb_p_received;
     sc_signal<bool> start_sending;
+    unsigned int nb_p_received;
+    unsigned int i_in;
+    unsigned int j_in;
 
     // IO PORTS
     sc_in<bool>          clk;
@@ -32,11 +34,8 @@ SC_MODULE(FILTRE) {
         nb_p_received = 0;
         start_sending = false;
         for (int l=0; l<R; ++l)
-            for (int c=0; c<R; ++c) {
+            for (int c=0; c<R; ++c) 
                 coeff[l][c] = _coeff[l][c];
-                cout << coeff[l][c] << " ";
-            }
-        cout << endl;
 
         SC_METHOD(receiving);
         sensitive << clk.pos();

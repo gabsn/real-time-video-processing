@@ -6,18 +6,20 @@ void FILTRE::receiving() {
         start_sending = false;
     }
 
+    i_in = nb_p_received / W;
+    j_in = nb_p_received % W;
+
     if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
         if (nb_p_received < SIZE-1) {
-            int i = nb_p_received / W;
-            int j = nb_p_received % W;
-            image_received[i % R][j] = p_in;
+            image_received[i_in % R][j_in] = p_in;
             nb_p_received++;
         } else {
             nb_p_received = 0;
             start_sending = false;
         }
 
-        if (nb_p_received >= W+1)
+        // Si on a au moins reçu la première ligne et les deux pixels suivant 
+        if (nb_p_received >= W+2)
             start_sending = true;
     }
 }
