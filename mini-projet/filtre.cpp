@@ -8,7 +8,10 @@ void FILTRE::receiving() {
 
     if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
         if (nb_p_received < SIZE-1) {
-            image_received[nb_p_received++] = p_in;
+            int i = nb_p_received / W;
+            int j = nb_p_received % W;
+            image_received[i % R][j] = p_in;
+            nb_p_received++;
         } else {
             nb_p_received = 0;
             start_sending = false;
@@ -91,7 +94,7 @@ unsigned char FILTRE::gen_pix(int i, int j) {
     for (int l=0; l<R; ++l) {
         for (int c=0; c<R; ++c) {
             if (matrix[l][c] != 0) {
-                result += matrix[l][c]*image_received[(i-1+l)*W+(j-1+c)];
+                result += matrix[l][c]*image_received[(i-1+l) % R][j-1+c];
             }
         }
     }
