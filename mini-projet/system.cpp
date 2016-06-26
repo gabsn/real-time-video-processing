@@ -18,8 +18,8 @@
 
 #define TRACE(x) sc_trace(my_trace_file, x, #x)
 
-//#define IS_ZOOM
-#define IS_FILTRE
+#define IS_ZOOM
+//#define IS_FILTRE
 //#define EDGE_DETECTION
 
 /***************************************************

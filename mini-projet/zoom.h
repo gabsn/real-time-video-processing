@@ -31,7 +31,6 @@ SC_MODULE(ZOOM) {
     SC_CTOR(ZOOM) {
         start_sending = false;
         nb_p_received  = 0;
-        image_received = new unsigned char[H2*W2];
 
         SC_METHOD(receiving);
         sensitive << clk.pos();
@@ -46,7 +45,7 @@ SC_MODULE(ZOOM) {
     void receiving();
     void sending();
 
-    unsigned char * image_received;
+    unsigned char image_received[H4+1][W2];
 };
 
 #endif

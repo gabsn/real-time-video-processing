@@ -15,7 +15,7 @@ void ZOOM::receiving() {
         nb_p_received = (nb_p_received == SIZE-1) ? 0 : nb_p_received+1;
 
         if (ACTIVE_RANGE) {
-            image_received[(i_in-H4)*W2+(j_in-W4)] = p_in;
+            image_received[(i_in-H4) % (H4+1)][j_in-W4] = p_in;
             start_sending = true;
         }
     }
@@ -39,7 +39,7 @@ void ZOOM::sending() {
                 // Si on est dans la fenêtre active, on sort le pixel courant
                 // Rappel : une trame vidéo fait 874*625, l'image active est de 720*576
                 if((i<H) && (j<W))
-                    p_out = image_received[i/2*W2+j/2];
+                    p_out = image_received[i/2 % (H4+1)][j/2];
                 else
                     p_out = 0;
 
