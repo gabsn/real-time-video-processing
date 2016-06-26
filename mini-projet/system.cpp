@@ -19,8 +19,8 @@
 #define TRACE(x) sc_trace(my_trace_file, x, #x)
 
 #define IS_ZOOM
-//#define IS_FILTRE
-//#define EDGE_DETECTION
+#define IS_FILTRE
+#define EDGE_DETECTION
 
 /***************************************************
  *	MAIN
@@ -138,14 +138,14 @@ int sc_main (int argc, char *argv[]) {
     zoom.v_out         ( signal_vref_2  );
     zoom.p_out         ( signal_pixel_2 );
 
-    filtre.clk         ( signal_clk     );
-    filtre.reset_n     ( signal_clk     );
-    filtre.h_in        ( signal_href_2  );
-    filtre.v_in        ( signal_vref_2  );
-    filtre.p_in        ( signal_pixel_2 );
-    filtre.h_out       ( signal_href_3  );
-    filtre.v_out       ( signal_vref_3  );
-    filtre.p_out       ( signal_pixel_3 );
+    filtre.clk           ( signal_clk     );
+    filtre.reset_n       ( signal_resetn  );
+    filtre.h_in          ( signal_href_2  );
+    filtre.v_in          ( signal_vref_2  );
+    filtre.p_in          ( signal_pixel_2);
+    filtre.h_out         ( signal_href_3  );
+    filtre.v_out         ( signal_vref_3  );
+    filtre.p_out         ( signal_pixel_3 );
 
     video_out.clk      ( signal_clk     );
     video_out.reset_n  ( signal_resetn  );
