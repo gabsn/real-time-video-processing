@@ -9,18 +9,8 @@ CXXFLAGS  =  -Wall -g
 LDFLAGS   =  -L$(SYSTEMC)/lib-$(ARCH)
 LDLIBS    =  -lsystemc
 
-EXE = trace 
-SRC = $(patsubst %, %.cpp, $(EXE))
-OBJ = $(patsubst %.cpp, %.o, $(SRC))
-
-all: $(EXE)
-
-$(EXE): $(OBJ) 
-
-run:
-	make && ./$(EXE)
-
 clean:
-	-rm -f *.o 
+	-rm -f *.o *.vcd
+	-find . -executable -type f -delete
 
 .PHONY: clean
