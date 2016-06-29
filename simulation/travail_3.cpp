@@ -31,7 +31,6 @@ int sc_main(int argc, char * argv[]) {
     sc_start(500,SC_NS);
 
     sc_close_vcd_trace_file(trace_f);
-
     return 0;
 }
 
