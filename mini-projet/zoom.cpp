@@ -5,11 +5,19 @@
 void ZOOM::receiving() {
     if (!reset_n) {
         nb_p_received = 0;
+        big_width = W;
+        big_width_set = false;
         start_sending = false;
     } 
 
     i_in = nb_p_received / W;
     j_in = nb_p_received % W;
+
+    if (!h_in && nb_p_received == W && !big_width_set) {
+        big_width = big_width+1;
+    } else if (h_in && nb_p_received == W && !big_width_set) {
+        big_width_set = true;
+    }
 
     if (h_in && ((v_in && nb_p_received < 3*W) || (!v_in && nb_p_received >= 3*W))) {
         nb_p_received = (nb_p_received == SIZE-1) ? 0 : nb_p_received+1;
@@ -32,8 +40,8 @@ void ZOOM::sending() {
         // On attend pour se synchroniser
         while (!start_sending) wait();
 
-        for(int i=0; i<625; i++) {
-            for(int j=0; j<874; j++) {
+        for(unsigned int i=0; i<625; i++) {
+            for(unsigned int j=0; j<big_width; j++) {
                 // on attend le prochain coup d'horloge
                 wait();
                 // Si on est dans la fenêtre active, on sort le pixel courant

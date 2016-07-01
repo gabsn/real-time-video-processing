@@ -10,6 +10,8 @@
 SC_MODULE(ZOOM) {
     // Public attributes
     sc_signal<bool> start_sending;
+    sc_signal<bool> big_width_set;
+    sc_signal<unsigned int> big_width;
     unsigned int nb_p_received;
     unsigned int i_in;
     unsigned int j_in;
@@ -30,6 +32,8 @@ SC_MODULE(ZOOM) {
      **************************************************/
     SC_CTOR(ZOOM) {
         start_sending = false;
+        big_width_set = false;
+        big_width = W;
         nb_p_received  = 0;
 
         SC_METHOD(receiving);
